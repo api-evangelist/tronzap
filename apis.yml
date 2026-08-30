@@ -1,0 +1,51 @@
+name: TronZap
+description: >-
+  TronZap operates a publicly documented REST API for renting/purchasing TRON blockchain Energy (and bandwidth) to
+  reduce USDT (TRC-20) transfer fees. The JSON/HTTPS RPC-style API is backed by official PHP, Node.js, and Python SDKs
+  and a publicly linked Postman collection.
+url: https://raw.githubusercontent.com/api-evangelist/tronzap/refs/heads/main/apis.yml
+created: '2026-08-30'
+modified: '2026-08-30'
+specificationVersion: '0.21'
+tags:
+  - Blockchain
+  - Cryptocurrency
+  - TRON
+  - DeFi infrastructure
+  - Stablecoin
+  - USDT
+  - TRC-20
+  - Resource marketplace
+  - Payments
+  - Fees optimization
+apis:
+  - name: TronZap REST API
+    description: >-
+      REST API for TRON Energy/bandwidth purchase, transactions, account balance, subscriptions, and AML checks.
+      POST-based RPC-style endpoints under /v1/ with Bearer + X-Signature authentication.
+    humanURL: https://docs.tronzap.com/api/
+    baseURL: https://api.tronzap.com/v1/
+    tags:
+      - Blockchain
+      - Cryptocurrency
+      - TRON
+      - DeFi infrastructure
+      - Stablecoin
+      - USDT
+      - TRC-20
+      - Resource marketplace
+      - Payments
+      - Fees optimization
+    properties:
+      - type: Documentation
+        url: https://docs.tronzap.com
+      - type: PostmanCollection
+        url: https://www.postman.com/tron-energy/tronzap-com/overview
+maintainers:
+  - FN: TronZap
+    url: https://tronzap.com/developers
+generated:
+  by: apis.io/add
+  model: claude-opus-4-8
+  confidence: 90
+  at: '2026-08-30T20:09:27.515Z'
