@@ -1,0 +1,233 @@
+generated: '2026-08-30'
+method: searched
+source: >-
+  https://docs.tronzap.com/api/error-codes.html and
+  https://docs-wallets.tronzap.com/api/error-codes.html, fetched 2026-08-30
+format: custom-envelope
+rfc9457: false
+note: >-
+  TronZap does not use RFC 9457 application/problem+json. Both APIs return HTTP 200 with a
+  non-zero integer `code` in a JSON envelope, so an agent that branches on HTTP status alone
+  will read every business failure as a success. The provider says so explicitly:
+  "Always check code in the response body — HTTP 200 does not guarantee success."
+envelope:
+  content_type: application/json
+  http_status_on_error: 200
+  fields:
+  - name: code
+    type: integer
+    description: 0 on success, non-zero on error.
+  - name: key
+    type: string
+    description: >-
+      Stable machine-readable slug for the error. Empty string when not applicable. May carry
+      a dot-notation sub-key (e.g. invalid_tron_address.from_address) narrowing the failure
+      to a specific field.
+  - name: request_id
+    type: string
+    description: UUID for the request; the provider asks for it on support contact.
+  - name: error
+    type: string
+    description: Human-readable message.
+  example: |
+    {
+      "code": 1,
+      "key": "auth",
+      "request_id": "99d8b507-0bca-4d5a-9542-cc2a2f2e3639",
+      "error": "Incorrect token or signature"
+    }
+apis:
+- api: TronZap REST API
+  docs: https://docs.tronzap.com/api/error-codes.html
+  problem_types:
+  - code: 0
+    key: null
+    title: Success
+    detail: Not an error. The request was successful.
+    remediation: null
+  - code: 1
+    key: auth
+    title: Authentication error
+    detail: Incorrect token or signature.
+    remediation: >-
+      Check the API token and that the SHA-256 signature is computed over the exact raw
+      request body concatenated with the API secret.
+  - code: 2
+    key: invalid_service_or_params
+    title: Invalid service or parameters
+    detail: The service name or parameters supplied are not valid.
+    remediation: Check that the service name and parameters are correct.
+    sub_keys:
+    - key: invalid_service_or_params.network
+      detail: Unsupported network
+    - key: invalid_service_or_params.address
+      detail: Invalid address provided
+    - key: invalid_service_or_params.hash
+      detail: Hash is required for hash checks
+    - key: invalid_service_or_params.direction
+      detail: Invalid direction value
+    - key: invalid_service_or_params.page
+      detail: Invalid page
+    - key: invalid_service_or_params.per_page
+      detail: Invalid per_page
+    - key: invalid_service_or_params.status
+      detail: Invalid status
+    - key: invalid_service_or_params.id
+      detail: Invalid id / Either id or external_id is required
+    - key: invalid_service_or_params.external_id
+      detail: Invalid external_id
+    - key: invalid_service_or_params.address_owner
+      detail: Address belongs to another user
+    - key: invalid_service_or_params.internal_credit
+      detail: Internal credit not allowed
+    - key: invalid_service_or_params.amount
+      detail: Amount out of range
+    - key: invalid_service_or_params.exchange_finalized
+      detail: Exchange finalized
+    - key: invalid_service_or_params.exchange_state
+      detail: Exchange in invalid state
+  - code: 5
+    key: wallet_not_found
+    title: Wallet not found
+    detail: The referenced wallet does not exist.
+    remediation: Verify the wallet address or contact support.
+  - code: 6
+    key: insufficient_funds
+    title: Insufficient funds
+    detail: The account balance cannot cover the request.
+    remediation: Add funds to the account or reduce the requested energy amount.
+  - code: 10
+    key: invalid_tron_address
+    title: Invalid TRON address
+    detail: The address is not a valid 34-character TRON address.
+    remediation: Validate the TRON address format before sending it.
+    sub_keys:
+    - key: invalid_tron_address.from_address
+      detail: Invalid from address
+    - key: invalid_tron_address.to_address
+      detail: Invalid to address
+    - key: invalid_tron_address.contract_address
+      detail: Invalid contract address
+    - key: invalid_tron_address.already_subscribed
+      detail: Address already has an active subscription
+  - code: 11
+    key: invalid_energy_amount
+    title: Invalid energy amount
+    detail: The requested energy amount is out of range.
+    remediation: Check the min/max amounts returned by POST /v1/services.
+    sub_keys:
+    - key: invalid_energy_amount.energy_amount
+      detail: Invalid energy amount
+    - key: invalid_energy_amount.bandwidth_amount
+      detail: Invalid bandwidth amount
+  - code: 12
+    key: invalid_duration
+    title: Invalid duration
+    detail: The duration parameter is not valid.
+    remediation: Duration must be 1 (one hour); no other value is currently supported.
+    sub_keys:
+    - key: invalid_duration.duration
+      detail: Duration must be equal to 1 (1 hour)
+  - code: 20
+    key: subscription_not_found
+    title: Subscription not found
+    detail: No subscription matches the supplied id or external_id.
+    remediation: Verify the subscription ID or external ID.
+    sub_keys:
+    - key: subscription_not_found.transaction
+      detail: Transaction not found
+  - code: 21
+    key: cannot_stop_subscription
+    title: Cannot stop subscription
+    detail: The subscription cannot be stopped in its current state.
+    remediation: >-
+      Only subscriptions without transaction limits can be stopped. Adjust the transaction
+      limit or let pending transactions complete.
+  - code: 24
+    key: address_not_activated
+    title: Address not activated
+    detail: The TRON address has never been activated on-chain.
+    remediation: >-
+      Create an activate_address transaction first, or pass params.activate_address = true.
+    sub_keys:
+    - key: address_not_activated.subscription
+      detail: Address must be activated before purchasing subscription
+  - code: 25
+    key: address_already_activated
+    title: Address already activated
+    detail: The address is already active.
+    remediation: No action needed; skip the activation step.
+  - code: 30
+    key: aml_check_not_found
+    title: AML check not found
+    detail: No AML check matches the supplied identifier.
+    remediation: Re-run the AML check or contact support.
+  - code: 35
+    key: service_unavailable
+    title: Service not available
+    detail: The requested service is temporarily unavailable.
+    remediation: Retry later; check POST /v1/services for currently active services.
+  - code: 50
+    key: invalid_bandwidth_amount
+    title: Invalid bandwidth amount
+    detail: The requested bandwidth amount is out of range.
+    remediation: Check the min/max bandwidth amounts returned by POST /v1/services.
+  - code: 500
+    key: internal_server_error
+    title: Internal server error
+    detail: Unexpected failure on the TronZap side.
+    remediation: Retry with back-off; contact support with the request_id if it persists.
+- api: TronZap Wallet Orders API
+  docs: https://docs-wallets.tronzap.com/api/error-codes.html
+  note: >-
+    The Orders API is the only TronZap surface that maps some failures onto real HTTP status
+    codes. It publishes the HTTP status table below plus named error situations; it does not
+    publish a numbered code list beyond the example (code 60 / key address_from).
+  http_statuses:
+  - status: 200
+    meaning: Request succeeded (code 0) or application-level error (non-zero code in body).
+  - status: 422
+    meaning: Unprocessable request — validation failed (also mirrored as non-zero code in body).
+  - status: 429
+    meaning: Rate limit exceeded — 1 request/second/IP on /v1/orders* endpoints.
+  - status: 500
+    meaning: Internal server error.
+  problem_types:
+  - code: 60
+    key: address_from
+    title: Invalid TRON address
+    detail: address_from is not a valid TRON address.
+    remediation: Address must start with T and be 34 characters.
+    source: published example response
+  situations:
+  - situation: Invalid address_from or address_to
+    cause: Not a valid TRON address (must start with T, 34 chars).
+  - situation: duration not equal to 1
+    cause: Only 1-hour rentals are supported.
+  - situation: Both energy and bandwidth are 0
+    cause: At least one resource must be requested.
+  - situation: energy or bandwidth out of bounds
+    cause: Requested amount below the minimum or above the maximum for the project.
+  - situation: Duplicate active order
+    cause: >-
+      An active order for the same address_from + address_to pair already exists in `new`
+      status. Use POST /v1/orders/check to retrieve it rather than creating another.
+  - situation: order_id not found
+    cause: The order_id passed to check or cancel does not exist.
+  - situation: Rate limit exceeded
+    cause: More than 1 request/second from the same IP. Back off exponentially.
+  - situation: referral_code too long
+    cause: referral_code exceeds 64 characters.
+agent_guidance:
+- Never branch on HTTP status alone on the account API; every error arrives as HTTP 200.
+- Branch on `key`, not on the message text — `key` is stable, `error` is prose.
+- >-
+  Prefer the dot-notation sub-key when present; it names the exact offending field and is the
+  only field-level signal either API emits.
+- Log request_id on every non-zero code; the provider asks for it on support contact.
+summary:
+  account_api_codes: 16
+  account_api_sub_keys: 22
+  orders_api_http_statuses: 4
+  rfc9457: false
+  retryable_codes: [35, 500]

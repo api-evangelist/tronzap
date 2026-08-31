@@ -1,0 +1,92 @@
+generated: '2026-08-30'
+method: probed
+source: >-
+  https://docs-wallets.tronzap.com/api/ and
+  https://docs-wallets.tronzap.com/api/error-codes.html (published limit), confirmed by a
+  live unauthenticated POST to https://api.tronzap.com/v1/orders/calculate on 2026-08-30
+docs: https://docs-wallets.tronzap.com/api/error-codes.html
+note: >-
+  TronZap publishes a rate limit on exactly one of its two APIs. The public Wallet Orders API
+  documents 1 request/second/IP and returns real RateLimit response headers, which we
+  confirmed live. The authenticated account API (/v1/services, /v1/transaction/new,
+  /v1/subscriptions, /v1/aml-checks, ...) publishes no limit anywhere in its reference — yet
+  the first-party PHP SDK ships a dedicated RateLimitException class, so a limit is enforced
+  and simply undocumented.
+limits:
+- scope: per-ip
+  api: TronZap Wallet Orders API
+  applies_to: all /v1/orders* endpoints
+  limit: 1
+  window: 1s
+  burst: null
+  status_on_exhaustion: 429
+  method: probed
+  evidence: >-
+    Two POSTs to https://api.tronzap.com/v1/orders/calculate issued back to back on
+    2026-08-30: the first returned HTTP 200 with x-ratelimit-limit: 1 and
+    x-ratelimit-remaining: 0; the second returned HTTP 429 with body
+    {"code":429,"error":"Too Many Requests"}.
+- scope: per-key
+  api: TronZap REST API
+  applies_to: all authenticated /v1/* endpoints
+  limit: null
+  window: null
+  status_on_exhaustion: null
+  method: searched
+  evidence: >-
+    No limit is stated on https://docs.tronzap.com/api/ , /api/authentication.html or
+    /api/error-codes.html. The error-code table has no rate-limit entry. The official PHP SDK
+    nonetheless defines TronZap\Exception\RateLimitException
+    (github.com/tron-energy-market/tronzap-sdk-php), so an undocumented limit exists.
+  note: Undocumented. An integrator cannot size a client against it.
+- scope: per-address-pair
+  api: TronZap Wallet Orders API
+  applies_to: POST /v1/orders
+  limit: 1
+  window: while previous order remains in `new` status
+  status_on_exhaustion: 200 with non-zero code ("Duplicate active order")
+  method: searched
+  evidence: >-
+    "You cannot create a second active order for the same address_from + address_to pair
+    while the previous order is still in new status." —
+    https://docs-wallets.tronzap.com/api/
+  note: >-
+    A concurrency guard rather than a throughput limit, but it is the only duplicate-write
+    protection either API offers.
+response_headers:
+  observed:
+  - name: x-ratelimit-limit
+    example: '1'
+    surface: /v1/orders*
+    method: probed
+  - name: x-ratelimit-remaining
+    example: '0'
+    surface: /v1/orders*
+    method: probed
+  documented: []
+  absent:
+  - name: retry-after
+    note: >-
+      Not returned on the 429 we observed. The docs tell clients to "implement exponential
+      back-off" instead of supplying a retry hint, so a client has no server-supplied wait.
+  - name: ratelimit-reset
+    note: Not returned; the reset instant must be inferred from the 1-second window.
+  standard: >-
+    X-RateLimit-* legacy style, partially implemented (limit + remaining, no reset). Not
+    RFC 9331 / draft-ietf-httpapi-ratelimit-headers RateLimit-* form.
+agent_guidance:
+- >-
+  Serialize all /v1/orders* traffic to at most one request per second per egress IP; a shared
+  NAT or a Lambda pool behind one IP will collide.
+- >-
+  On 429 there is no Retry-After. Back off at least 1 second and grow exponentially.
+- >-
+  On a "Duplicate active order" failure, call POST /v1/orders/check with the existing order,
+  do not retry the create.
+summary:
+  limit_count: 3
+  documented_limits: 2
+  probed_limits: 1
+  undocumented_surfaces: 1
+  headers_returned: 2
+  retry_after_returned: false

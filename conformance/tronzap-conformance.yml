@@ -1,0 +1,226 @@
+generated: '2026-08-30'
+method: searched
+source: >-
+  https://docs.tronzap.com/api/* , https://docs-wallets.tronzap.com/api/* ,
+  https://tronzap.com/terms , https://tronzap.com/privacy , https://tronzap.com/aml-check ,
+  https://tronzap.com/llms.txt , and live probes of api.tronzap.com on 2026-08-30
+note: >-
+  Assertions are made only where the published contract or the provider's own text supports
+  them. TronZap operates in crypto infrastructure, a market whose relevant "standards" are
+  blockchain token/protocol standards rather than API standards; those are asserted from the
+  product surface, and the API-side standards are almost all `conforms: false`.
+standards:
+- id: oauth2
+  name: OAuth 2.0
+  conforms: false
+  evidence: >-
+    No OAuth flows, no authorization or token endpoint, no scopes. Authentication is a static
+    bearer token plus an X-Signature body hash
+    (https://docs.tronzap.com/api/authentication.html). /.well-known/oauth-authorization-server
+    returns 404 on all four hosts.
+- id: oidc
+  name: OpenID Connect
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404 on all TronZap hosts (probed 2026-08-30).
+- id: rfc9457
+  name: RFC 9457 Problem Details for HTTP APIs
+  conforms: false
+  evidence: >-
+    Errors are a custom envelope {code, key, request_id, error} returned as
+    application/json with HTTP 200, not application/problem+json
+    (https://docs.tronzap.com/api/error-codes.html).
+- id: rfc8594
+  name: RFC 8594 Sunset HTTP Header
+  conforms: false
+  evidence: >-
+    No Sunset or Deprecation headers and no deprecation policy; deprecated fields are marked
+    only in prose in the reference.
+- id: rfc9331-ratelimit-headers
+  name: RateLimit header fields for HTTP (RateLimit-*)
+  conforms: false
+  partial: true
+  evidence: >-
+    Legacy X-RateLimit-Limit and X-RateLimit-Remaining are returned on /v1/orders* (observed
+    live 2026-08-30), but there is no RateLimit-Reset, no Retry-After on 429, and none of the
+    RFC-form RateLimit-* fields.
+- id: pagination
+  name: Documented pagination
+  conforms: true
+  evidence: >-
+    page / per_page with stated defaults (1 / 10) and a stated maximum (50) on
+    POST /v1/subscriptions/history and POST /v1/aml-checks/history.
+- id: idempotency
+  name: Client-controlled idempotency keys
+  conforms: false
+  evidence: >-
+    No idempotency key on either API. external_id is documented as a lookup alias, not as a
+    deduplication key. The only duplicate-write guard is the Orders API's rejection of a
+    second active order on the same address_from + address_to pair
+    (https://docs-wallets.tronzap.com/api/).
+- id: openapi
+  name: OpenAPI Specification
+  conforms: false
+  evidence: >-
+    No OpenAPI or Swagger document is served. Probed /openapi.json, /openapi.yaml,
+    /swagger.json, /v1/openapi.json, /api-docs, /docs and /redoc on api.tronzap.com (all JSON
+    404) and on docs.tronzap.com, docs-wallets.tronzap.com and tronzap.com (all HTML 404),
+    2026-08-30.
+- id: asyncapi
+  name: AsyncAPI
+  conforms: false
+  na: true
+  evidence: >-
+    No event, webhook or streaming surface exists to describe. The provider prescribes polling
+    (https://docs-wallets.tronzap.com/api/check-order.html).
+- id: postman-collection
+  name: Postman Collection v2
+  conforms: true
+  evidence: >-
+    A first-party public collection is published — "Tron Energy API by TronZap.com" in the
+    public TronZap.com workspace (https://www.postman.com/tron-energy/tronzap-com/overview),
+    schema https://schema.getpostman.com/json/collection/v2.0.0/collection.json, 9 requests.
+    Saved verbatim to postman/tronzap.postman_collection.json. This is TronZap's only
+    machine-readable API contract.
+  caveat: >-
+    Schema v2.0.0, not the current v2.1.0, and it covers only 8 of the 17 documented account
+    endpoints (no subscriptions, no AML). It also carries POST /v1/energy/calculate while the
+    reference documents POST /v1/calculate — a drift between the two published surfaces.
+- id: llms-txt
+  name: llms.txt
+  conforms: true
+  evidence: >-
+    https://tronzap.com/llms.txt returns HTTP 200, 9,070 bytes, text/plain, in llms.txt format
+    with About / Site Pages / Services / Pricing / FAQ / API & SDK sections. Saved verbatim to
+    llms/tronzap-llms.txt.
+  caveat: >-
+    Served only from the marketing host; docs.tronzap.com/llms.txt and
+    docs-wallets.tronzap.com/llms.txt both 404. It also omits the Go SDK and the entire Wallet
+    Orders API, so an agent reading it gets an incomplete picture of the surface.
+- id: mcp
+  name: Model Context Protocol
+  conforms: false
+  evidence: >-
+    No hosted MCP endpoint and no MCP package. Searched npm and PyPI for a TronZap MCP server
+    (2026-08-30) — the only TronZap package on either registry is the SDK.
+- id: a2a
+  name: A2A Agent Card
+  conforms: false
+  evidence: >-
+    /.well-known/agent-card.json and /.well-known/agent.json return 404 on all four TronZap
+    hosts (probed 2026-08-30).
+- id: security-txt
+  name: RFC 9116 security.txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 on all four TronZap hosts (probed 2026-08-30).
+- id: tls13
+  name: TLS 1.3
+  conforms: true
+  evidence: >-
+    api.tronzap.com and docs.tronzap.com both negotiate TLSv1.3
+    (security/tronzap-domain-security.yml, probed 2026-08-30).
+- id: dnssec
+  name: DNSSEC
+  conforms: true
+  evidence: tronzap.com is DNSSEC-signed (security/tronzap-domain-security.yml).
+- id: dmarc
+  name: DMARC
+  conforms: true
+  partial: true
+  evidence: >-
+    DMARC record present with policy p=none — published but not enforcing
+    (security/tronzap-domain-security.yml).
+- id: hsts
+  name: HTTP Strict Transport Security
+  conforms: false
+  evidence: No Strict-Transport-Security header on docs.tronzap.com; none observed on api.tronzap.com.
+- id: caa
+  name: CAA records
+  conforms: false
+  evidence: No CAA record on tronzap.com (probed 2026-08-30).
+domain_standards:
+  note: >-
+    Cryptocurrency infrastructure has no API-layer domain standard equivalent to SCIM, FHIR or
+    OpenRTB. What TronZap's contract does declare is the on-chain standards it operates
+    against, and those are visible in the contract itself rather than only in marketing copy.
+    REWARD-ONLY: nothing is asserted here that the docs do not state.
+  declared:
+  - id: trc-20
+    name: TRC-20 token standard (TRON)
+    conforms: true
+    evidence: >-
+      The entire product is priced and specified against TRC-20 USDT transfer mechanics. The
+      reference states the exact resource cost of a TRC-20 transfer — 65,000 energy + 345
+      bandwidth for a standard transfer, 131,000 energy to a new or inactive wallet — and
+      POST /v1/estimate-energy takes the contract address of the TRC-20 token being
+      transferred (error sub-key invalid_tron_address.contract_address).
+    source: https://docs.tronzap.com/api/estimate-energy.html
+  - id: tron-resource-model
+    name: TRON Energy / Bandwidth resource and delegation model
+    conforms: true
+    evidence: >-
+      The contract's core nouns are TRON protocol primitives, not TronZap inventions — energy,
+      bandwidth, delegation duration (fixed at 1 hour), address activation, and the
+      OUT_OF_ENERGY failure mode. resources.energy / resources.bandwidth and
+      params.duration=1 map directly onto TRON's staking-and-delegation model.
+    source: https://docs-wallets.tronzap.com/api/create-order.html
+  - id: base58-tron-address
+    name: TRON Base58Check address format
+    conforms: true
+    evidence: >-
+      Address validation is specified in the contract — "must start with T, 34 chars" — and
+      enforced as error code 10 / invalid_tron_address with per-field sub-keys.
+    source: https://docs-wallets.tronzap.com/api/error-codes.html
+  - id: ulid
+    name: ULID identifiers
+    conforms: true
+    evidence: >-
+      Orders API order_id is documented as a ULID, with a real example
+      (01HZX5N6Q9TY3K2P0VWB7HRD4M).
+    source: https://docs-wallets.tronzap.com/api/create-order.html
+compliance:
+  note: >-
+    TronZap sells an AML screening product but publishes no certification of its own. This
+    distinction matters: it is a compliance *vendor* without a published compliance *posture*.
+  certifications: []
+  attestations: []
+  published_policies: [terms-of-service, privacy-policy]
+  programs:
+  - name: AML screening (product)
+    published: true
+    description: >-
+      Blockchain AML screening of TRON addresses and transaction hashes, sold both as a
+      no-registration web tool (https://tronzap.com/aml-check) and as four API endpoints
+      (POST /v1/aml-checks, /aml-checks/new, /aml-checks/check, /aml-checks/history) with
+      pending/processing/completed/failed states.
+    note: >-
+      The screening provider behind the checks is not named in the docs, so the underlying
+      risk methodology and sanctions-list coverage are not disclosed.
+  - name: AML Policy
+    published: false
+    url: null
+    note: >-
+      The site footer carries an "AML Policy" link alongside Terms of Use and Privacy Policy,
+      but its href is https://docs.tronzap.com/ — the API documentation home, not an AML
+      policy. No AML policy document is published anywhere on tronzap.com. Verified in the
+      rendered footer markup of https://tronzap.com/ on 2026-08-30. This is a broken
+      compliance claim, not a compliance program, and no Compliance pointer is emitted for it.
+  - name: TRON DAO membership
+    published: true
+    url: https://forum.trondao.org/t/tronzap-tron-energy-rentals-made-easy-24-7-support-and-upcoming-subscriptions/32982
+    note: >-
+      Self-described "Proud member of TRON DAO" and "Member of TRON Builders League" — an
+      ecosystem affiliation, not a security or compliance certification.
+  soc2: false
+  iso27001: false
+  pci_dss: false
+  gdpr_statement: https://tronzap.com/privacy
+  trust_center: false
+  bug_bounty: false
+  vulnerability_disclosure: false
+summary:
+  standards_asserted: 20
+  conforming: 8
+  non_conforming: 11
+  na: 1
+  domain_standards_declared: 4
+  certifications_published: 0

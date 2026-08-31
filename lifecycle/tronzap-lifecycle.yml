@@ -1,0 +1,119 @@
+generated: '2026-08-30'
+method: searched
+source: >-
+  https://docs.tronzap.com/api/ , /api/calculate.html, /api/estimate-energy.html,
+  /api/services.html, /api/transaction-create.html, /api/subscription-check.html,
+  https://docs-wallets.tronzap.com/api/ ; status page and changelog probed 2026-08-30
+versioning:
+  scheme: uri-path
+  current_version: v1
+  base: https://api.tronzap.com/v1/
+  header: null
+  date_pinning: false
+  note: Single live version. No v0, no beta channel, no version negotiation.
+deprecation_policy:
+  published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  note: >-
+    TronZap has no written deprecation policy, no notice period and no Sunset/Deprecation
+    header support. It does, however, mark superseded fields inline in the reference with the
+    word "Deprecated" and name the replacement — a field-level deprecation practice without a
+    policy behind it. An integrator has no way to know how long a deprecated field will keep
+    working.
+deprecated_fields:
+- surface: POST /v1/calculate
+  field: energy (request)
+  replacement: amount
+  source: https://docs.tronzap.com/api/calculate.html
+- surface: POST /v1/calculate
+  field: result.energy (response)
+  replacement: result.amount
+  source: https://docs.tronzap.com/api/calculate.html
+- surface: POST /v1/estimate-energy
+  field: result.energy (response)
+  replacement: result.amount
+  source: https://docs.tronzap.com/api/estimate-energy.html
+- surface: POST /v1/services
+  field: result.energy[].min_energy (response)
+  replacement: result.energy[].min_amount
+  source: https://docs.tronzap.com/api/services.html
+- surface: POST /v1/services
+  field: result.energy[].max_energy (response)
+  replacement: result.energy[].max_amount
+  source: https://docs.tronzap.com/api/services.html
+- surface: POST /v1/transaction/new
+  field: params.energy_amount (request)
+  replacement: params.amount or params.amounts.energy
+  source: https://docs.tronzap.com/api/transaction-create.html
+  note: >-
+    The provider publishes the resolution order explicitly — params.amounts, then
+    params.amount, then params.energy_amount — and recommends params.amounts as the most
+    universal form.
+- surface: POST /v1/subscription/check
+  field: subscription_id (request)
+  replacement: id
+  source: https://docs.tronzap.com/api/subscription-check.html
+deprecated_operations: []
+status_page:
+  published: false
+  url: null
+  probed:
+  - url: https://status.tronzap.com/
+    status: 000
+    note: Host does not resolve.
+  - url: https://tronzap.com/status
+    status: 404
+  note: >-
+    No status page, no uptime history and no incident feed. The provider markets "24/7"
+    and "production-grade infrastructure" but publishes no operational transparency surface.
+    Error code 35 (service_unavailable) is the only availability signal, and it arrives only
+    in-band.
+changelog:
+  published: false
+  probed:
+  - url: https://docs.tronzap.com/changelog.html
+    status: 404
+  - url: https://docs-wallets.tronzap.com/changelog.html
+    status: 404
+  - url: https://tronzap.com/changelog
+    status: 404
+  note: >-
+    No dated changelog on either docs host. The only public release trail is the SDK tag
+    history in github.com/tron-energy-market and the registry publish dates recorded in
+    packages/tronzap-packages.yml.
+sla:
+  published: false
+  note: >-
+    No SLA, uptime target or credit scheme is published. The B2B page offers "Special Terms
+    and Pricing" to VIP partners with a 5,000 TRX deposit, which is where any commitment
+    would be negotiated privately.
+support:
+  channels:
+  - type: telegram
+    url: https://telegram.me/tronzap_support_bot
+    note: Provider states 24/7 support.
+  - type: web
+    url: https://tronzap.com/contact
+  - type: faq
+    url: https://tronzap.com/support
+  - type: forum
+    url: https://forum.trondao.org/t/tronzap-tron-energy-rentals-made-easy-24-7-support-and-upcoming-subscriptions/32982
+maturity:
+  api_first_seen: '2025-03-31'
+  evidence: >-
+    Public Postman workspace created 2025-03-31 (workspace createdAt from the Postman public
+    search API); first SDK release on npm 2025-04-02.
+  wallet_orders_api: >-
+    Second, newer surface. Its own docs host (docs-wallets.tronzap.com) publishes example
+    timestamps dated 2026-05-18; no SDK covers it.
+summary:
+  versions: 1
+  deprecated_fields: 7
+  deprecated_operations: 0
+  deprecation_policy: false
+  sunset_headers: false
+  status_page: false
+  changelog: false
+  sla: false

@@ -1,0 +1,246 @@
+generated: '2026-08-30'
+method: derived
+source: >-
+  Derived from the published request/response field tables at https://docs.tronzap.com/api/*
+  and https://docs-wallets.tronzap.com/api/* , and from the saved
+  postman/tronzap.postman_collection.json. No OpenAPI exists, so there are no $ref links to
+  walk; relationships are read from the id-reference fields the provider documents.
+note: >-
+  Two disjoint object graphs sharing one identity anchor. The account API is rooted in an
+  authenticated Account; the wallet Orders API has no account at all and is rooted in a
+  standalone Order. Both converge on the TRON address as the real primary key — almost every
+  request and every delivery is keyed on a 34-character TRON address, not on a TronZap id.
+identifiers:
+- name: TRON address
+  format: Base58, 34 characters, leading 'T'
+  role: >-
+    The universal join key. address, address_from, address_to, deposit_address and the
+    subscription/AML subject are all TRON addresses.
+- name: order_id
+  format: ULID
+  surface: Wallet Orders API
+  example_shape: 01HZX5N6Q9TY3K2P0VWB7HRD4M
+- name: request_id
+  format: UUID v4
+  role: Per-request trace id returned in every envelope on both APIs.
+- name: external_id
+  format: client-supplied string
+  role: >-
+    Caller's own identifier on transactions and subscriptions; usable as an alternative lookup
+    key on check and stop.
+- name: referral_code
+  format: string, max 64 chars, immutable once set
+  role: Partner attribution on Orders API creates.
+entities:
+- name: Account
+  surface: TronZap REST API
+  description: The authenticated TronZap account behind an API token/secret pair.
+  operations: [POST /v1/balance]
+  fields_documented: [balance]
+  relationships:
+  - type: has_many
+    target: Transaction
+    via: token identity
+  - type: has_many
+    target: Subscription
+    via: token identity
+  - type: has_many
+    target: AMLCheck
+    via: token identity
+- name: Service
+  surface: TronZap REST API
+  description: >-
+    A purchasable resource offering with its price band. Returned as a catalog, one entry per
+    resource type.
+  operations: [POST /v1/services]
+  fields_documented:
+  - result.energy[].min_amount
+  - result.energy[].max_amount
+  - result.energy[].min_energy (deprecated)
+  - result.energy[].max_energy (deprecated)
+  - result.energy[].price
+  - result.energy[].price_32k
+  relationships:
+  - type: has_many
+    target: Transaction
+    via: service
+    note: A Transaction names the service it buys ("energy", "bandwidth", "resource_bundle", "activate_address").
+- name: Transaction
+  surface: TronZap REST API
+  description: >-
+    A purchase of energy, bandwidth, a resource bundle, or an address activation. The
+    account API's central write object and its irreversible one.
+  operations: [POST /v1/transaction/new, POST /v1/transaction/check]
+  fields_documented:
+  - external_id
+  - service
+  - params.address
+  - params.amount
+  - params.amounts.energy
+  - params.amounts.bandwidth
+  - params.energy_amount (deprecated)
+  - params.duration
+  - params.activate_address
+  states: [new, pending, success, failed]
+  relationships:
+  - type: belongs_to
+    target: Account
+    via: bearer token
+  - type: belongs_to
+    target: Service
+    via: service
+  - type: has_one
+    target: TronAddress
+    via: params.address
+- name: Subscription
+  surface: TronZap REST API
+  description: >-
+    A recurring energy delegation that keeps a TRON address topped up. Created from a
+    subscription type id drawn from the subscriptions catalog.
+  operations:
+  - POST /v1/subscriptions
+  - POST /v1/subscriptions/history
+  - POST /v1/subscription/start
+  - POST /v1/subscription/check
+  - POST /v1/subscription/stop
+  fields_documented:
+  - id
+  - subscription_id
+  - external_id
+  - params.address
+  - params.duration
+  - params.transactions_limit
+  - params.activate_address
+  relationships:
+  - type: belongs_to
+    target: Account
+    via: bearer token
+  - type: belongs_to
+    target: SubscriptionType
+    via: subscription_id
+  - type: has_one
+    target: TronAddress
+    via: params.address
+  - type: has_many
+    target: Transaction
+    via: transactions_limit
+    note: >-
+      Subscriptions consume transactions; error sub-key subscription_not_found.transaction
+      confirms transactions are addressable under a subscription.
+- name: SubscriptionType
+  surface: TronZap REST API
+  description: A purchasable subscription plan returned by the catalog endpoint.
+  operations: [POST /v1/subscriptions]
+  relationships:
+  - type: has_many
+    target: Subscription
+    via: subscription_id
+- name: AMLCheck
+  surface: TronZap REST API
+  description: >-
+    A blockchain AML screening of a TRON address or a transaction hash, billed per check.
+  operations:
+  - POST /v1/aml-checks
+  - POST /v1/aml-checks/new
+  - POST /v1/aml-checks/check
+  - POST /v1/aml-checks/history
+  fields_documented: [address, hash, direction, status, page, per_page]
+  states: [pending, processing, completed, failed]
+  relationships:
+  - type: belongs_to
+    target: Account
+    via: bearer token
+  - type: has_one
+    target: TronAddress
+    via: address
+- name: EnergyEstimate
+  surface: TronZap REST API
+  description: >-
+    A priced, side-effect-free quote. Not persisted — a value object, but the object an agent
+    should build against before any write.
+  operations: [POST /v1/estimate-energy, POST /v1/calculate]
+  fields_documented:
+  - result.amount
+  - result.energy (deprecated)
+  - result.duration
+  - result.price
+  - result.type
+- name: AddressInfo
+  surface: TronZap REST API
+  description: On-chain resource and token-balance snapshot for a TRON address.
+  operations: [POST /v1/address-info]
+  relationships:
+  - type: has_one
+    target: TronAddress
+    via: address
+- name: DirectRechargeInfo
+  surface: TronZap REST API
+  description: Configuration for the direct energy recharge service.
+  operations: [POST /v1/direct-recharge-info]
+- name: Order
+  surface: TronZap Wallet Orders API
+  description: >-
+    A public, account-less energy order. Created anonymously, paid by an exact TRX transfer to
+    a generated deposit address, delivered to a second address.
+  operations:
+  - POST /v1/orders
+  - POST /v1/orders/check
+  - POST /v1/orders/cancel
+  - POST /v1/orders/calculate
+  fields_documented:
+  - order_id
+  - status
+  - deposit_address
+  - amount
+  - currency
+  - expires_at
+  - ttl
+  - referral_code
+  - address_from
+  - address_to
+  - address_to_activation
+  - resources.duration
+  - resources.energy
+  - resources.bandwidth
+  states: [new, paid, processing, completed, failed, cancelled, expired]
+  relationships:
+  - type: has_one
+    target: TronAddress
+    via: address_from
+    note: The paying address. The deposit must originate here or it will not match.
+  - type: has_one
+    target: TronAddress
+    via: address_to
+    note: The delivery address.
+  - type: has_one
+    target: TronAddress
+    via: deposit_address
+    note: Server-generated; the address the user must pay.
+  - type: belongs_to
+    target: Partner
+    via: referral_code
+- name: Partner
+  surface: TronZap Wallet Orders API
+  description: >-
+    A referral-code holder earning commission on completed orders. Has a dashboard account but
+    no API credentials — the code alone carries attribution.
+  relationships:
+  - type: has_many
+    target: Order
+    via: referral_code
+- name: TronAddress
+  surface: shared
+  description: >-
+    Not a TronZap object — an on-chain TRON account. It is nevertheless the entity every other
+    object points at, and the reason the two API graphs are joinable at all.
+relationships_summary:
+  account_api_root: Account
+  orders_api_root: Order
+  shared_key: TronAddress
+  cross_api_link: >-
+    None at the object level. An Order carries no account id and an account Transaction
+    carries no order_id; the two graphs meet only on the TRON address.
+id_prefixes:
+  order_id: ULID, no prefix
+  tron_address: Base58, 34 characters, leading T
+entity_count: 12

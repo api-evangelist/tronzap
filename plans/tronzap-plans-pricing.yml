@@ -1,0 +1,117 @@
+generated: '2026-08-30'
+method: searched
+source: >-
+  https://tronzap.com/b2b (Plans and Partnerships), https://tronzap.com/llms.txt (published
+  unit pricing), https://tronzap.com/referral-program, and a live unauthenticated
+  POST https://api.tronzap.com/v1/orders/calculate on 2026-08-30
+currency: TRX
+billing_model: usage-based
+note: >-
+  TronZap sells a metered blockchain resource, not API call quota. There is no free tier, no
+  request allowance and no per-seat pricing — the meter is TRX spent on energy and bandwidth,
+  and API access itself is free with an account. Two commercial tiers are published on the
+  B2B page; unit prices are published on the marketing site and are also readable at runtime
+  from the public calculate endpoint, which is unusual and useful: the price list is
+  machine-readable without credentials.
+plans:
+- name: Pay-as-you-go
+  audience: For most customers
+  price: 0
+  price_note: No subscription fee. You pay only the TRX cost of the resources you rent.
+  currency: TRX
+  billing_period: none
+  commitment: none
+  prepayment_required: false
+  minimum: Any volume — starting from a single transaction
+  included_quota: null
+  overage: null
+  limits:
+  - Rental minimum and maximum are returned per service by POST /v1/services
+  - Homepage states a maximum single energy rental of 100 TRX
+  - Wallet Orders API — 1 request/second/IP
+  features:
+  - Buy TRON Energy anytime, in any amount
+  - No deposits, no volume commitments, no contracts
+  - Best market price for any volume
+  - Full REST API + PHP/Node.js/Python/Go SDKs
+  source: https://tronzap.com/b2b
+- name: VIP
+  audience: Wallets, platforms and exchanges making over 500 transactions per month
+  price: null
+  price_note: Individual terms; negotiated. No public rate card.
+  currency: TRX
+  billing_period: monthly
+  commitment: Fixed monthly volume commitment
+  prepayment_required: true
+  minimum_deposit: 5000 TRX
+  included_quota: null
+  overage: null
+  features:
+  - Fixed monthly volume commitment
+  - Deposit from 5,000 TRX
+  - Special Terms and Pricing
+  - Non-Custodial Staking Options
+  cta: Discuss partnership
+  source: https://tronzap.com/b2b
+unit_pricing:
+  note: >-
+    Published resource prices. These are the meter, and they move with the TRON market — the
+    figures below were the provider's published examples plus one live quote.
+  published:
+  - item: 65,000 Energy (standard USDT TRC-20 transfer)
+    price: ~3 TRX
+    usd_equivalent: ~$0.69
+    source: https://tronzap.com/llms.txt
+  - item: 131,000 Energy (transfer to a new or inactive wallet)
+    price: ~5.50 TRX
+    usd_equivalent: ~$1.27
+    source: https://tronzap.com/llms.txt
+  - item: USDT transfer with no rented energy (TRX burned)
+    price: ~13.40 TRX
+    note: The comparison the provider sells against; stated saving ~10.40 TRX per transfer.
+    source: https://tronzap.com/llms.txt
+  probed:
+  - item: 65,000 energy + 345 bandwidth, 1 hour, no activation
+    price: 2.80 TRX
+    breakdown: energy 2.45 TRX + bandwidth 0.35 TRX + activation 0
+    observed: '2026-08-30'
+    endpoint: POST https://api.tronzap.com/v1/orders/calculate
+    http_status: 200
+    note: >-
+      Live, unauthenticated quote. The provider guarantees this total equals the amount a
+      subsequent POST /v1/orders will require for the same inputs.
+  documented_examples:
+  - item: account activation fee
+    price: 1.40 TRX
+    source: https://docs-wallets.tronzap.com/api/calculate.html (published example response)
+revenue_share:
+  program: Referral / partner commission
+  rate: up to 5% of every energy rental made by a referral
+  mechanism: >-
+    referral_code passed in the body of every POST /v1/orders call. Orders without a valid
+    referral code earn no commission. The code is set once at
+    dash.tronzap.com/referral-earnings and cannot be changed afterwards.
+  credited_when: order reaches `completed` status
+  source: https://tronzap.com/referral-program
+free_surfaces:
+- surface: TronZap Wallet Orders API
+  note: >-
+    Fully public and unauthenticated. No account, key or plan is needed to call
+    /v1/orders/calculate, /v1/orders, /v1/orders/check or /v1/orders/cancel — the only cost is
+    the TRX the end user deposits.
+- surface: AML check
+  note: >-
+    tronzap.com/aml-check is advertised as usable "without registration"; the API AML
+    endpoints are billed and priced per POST /v1/aml-checks.
+refund_policy:
+  refundable: false
+  statement: >-
+    "Are purchases refundable? No. Paid TRX goes into staking to power energy for all users."
+  source: https://tronzap.com/llms.txt
+  ref: conventions/tronzap-conventions.yml
+summary:
+  plan_count: 2
+  free_tier: false
+  public_rate_card: partial
+  machine_readable_pricing: true
+  machine_readable_pricing_endpoint: POST https://api.tronzap.com/v1/orders/calculate

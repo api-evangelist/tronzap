@@ -1,0 +1,75 @@
+generated: '2026-08-30'
+method: searched
+source: >-
+  https://docs.tronzap.com/sdk.html and https://tronzap.com/llms.txt (first-party SDK list);
+  version + published read live from registry.npmjs.org, pypi.org, repo.packagist.org and
+  proxy.golang.org on 2026-08-30.
+provider: TronZap
+note: >-
+  Four first-party SDKs, all MIT, all published from the github.com/tron-energy-market
+  account that TronZap links from its own homepage, docs and llms.txt. Currency is uneven:
+  the PHP SDK is on 1.4.0 (2026-05-05) and the Go SDK shipped v0.1.0 (2026-08-10), but the
+  npm and PyPI packages have not been republished since 2025-06-28 even though their GitHub
+  repositories were pushed on 2026-05-05 — the JavaScript and Python distributions are
+  fourteen months behind their own source and behind the PHP SDK.
+packages:
+- name: tronzap-sdk
+  language: JavaScript/TypeScript
+  registry: npm
+  official: true
+  url: https://www.npmjs.com/package/tronzap-sdk
+  repository: https://github.com/tron-energy-market/tronzap-sdk-nodejs
+  install: npm install tronzap-sdk
+  license: MIT
+  version: 1.0.4
+  published: '2025-06-28'
+  note: >-
+    Runtime targets Node.js, Bun and Deno. Last npm publish 2025-06-28 while the source
+    repository was last pushed 2026-05-05 — the registry artifact trails the repository.
+- name: tronzap-sdk
+  language: Python
+  registry: pypi
+  official: true
+  url: https://pypi.org/project/tronzap-sdk/
+  repository: https://github.com/tron-energy-market/tronzap-sdk-python
+  install: pip install tronzap-sdk
+  license: MIT
+  version: 1.0.7
+  published: '2025-06-28'
+  note: >-
+    Eight releases, 1.0.0 through 1.0.7. Last publish 2025-06-28 while the source repository
+    was last pushed 2026-05-05.
+- name: tron-energy-market/tronzap-sdk-php
+  language: PHP
+  registry: packagist
+  official: true
+  url: https://packagist.org/packages/tron-energy-market/tronzap-sdk-php
+  repository: https://github.com/tron-energy-market/tronzap-sdk-php
+  install: composer require tron-energy-market/tronzap-sdk-php
+  license: MIT
+  version: 1.4.0
+  published: '2026-05-05'
+  note: >-
+    The most current of the four. Ships a typed exception hierarchy (ApiException,
+    RateLimitException, UnauthorizedException, TimeoutException, SslException,
+    ConnectionException, NetworkException, ServerException, HttpException) that the
+    other three SDKs do not mirror.
+- name: github.com/tron-energy-market/tronzap-sdk-go
+  language: Go
+  registry: go
+  official: true
+  url: https://pkg.go.dev/github.com/tron-energy-market/tronzap-sdk-go
+  repository: https://github.com/tron-energy-market/tronzap-sdk-go
+  install: go get github.com/tron-energy-market/tronzap-sdk-go
+  license: MIT
+  version: v0.1.0
+  published: '2026-08-10'
+  note: >-
+    Newest SDK, added 2026-08-10 and still pre-1.0. Not referenced from llms.txt, which
+    lists only PHP, Node.js and Python — the published SDK inventory is already stale.
+summary:
+  total: 4
+  official: 4
+  registries: [npm, pypi, packagist, go]
+  most_recent_release: '2026-08-10'
+  oldest_current_release: '2025-06-28'

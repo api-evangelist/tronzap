@@ -1,0 +1,213 @@
+generated: '2026-08-30'
+method: derived
+status: candidate
+source: >-
+  No MCP server exists. Candidate tool list derived from the endpoints TronZap publishes at
+  https://docs.tronzap.com/api/ and https://docs-wallets.tronzap.com/api/ , cross-checked
+  against postman/tronzap.postman_collection.json.
+note: >-
+  TronZap ships no MCP server, hosted or local. Searched the provider's docs, marketing site
+  and llms.txt, plus npm and PyPI, on 2026-08-30 — the only TronZap package on either registry
+  is the REST SDK. This file is a CANDIDATE derivation, not a provider surface: nothing here
+  is callable until someone builds it. The endpoints and parameters below are quoted from the
+  provider's own reference and were not invented.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: derived
+search_evidence:
+- source: https://tronzap.com/llms.txt
+  status: 200
+  finding: No MCP section; the API & SDK section lists only REST docs, four SDKs and Postman.
+- source: https://registry.npmjs.org/-/v1/search?text=tronzap
+  status: 200
+  finding: One result — tronzap-sdk 1.0.4. No MCP package.
+- source: https://pypi.org/pypi/tronzap-mcp/json
+  status: 404
+  finding: No PyPI MCP package under the obvious name.
+- source: https://docs.tronzap.com/api/
+  status: 200
+  finding: No agent, MCP or tool-calling section in the reference.
+opportunity:
+  note: >-
+    The Wallet Orders API is unusually well suited to MCP: it is fully unauthenticated, has a
+    four-operation surface, publishes a true dry-run (POST /v1/orders/calculate whose total is
+    guaranteed to equal the order amount) and a real cancel path. An MCP server over it would
+    need no credential plumbing at all — the only guardrails required are the 1 req/s per-IP
+    ceiling and the fact that a completed order spends real TRX.
+tools:
+- name: tronzap_calculate_order_price
+  status: candidate
+  surface: TronZap Wallet Orders API
+  rest: POST /v1/orders/calculate
+  auth: none
+  side_effects: none
+  description: >-
+    Price energy and/or bandwidth for a 1-hour rental without creating an order. The returned
+    total equals the TRX amount a subsequent order will require.
+  inputs: [duration, activation, resources.energy, resources.bandwidth]
+  source: https://docs-wallets.tronzap.com/api/calculate.html
+- name: tronzap_create_order
+  status: candidate
+  surface: TronZap Wallet Orders API
+  rest: POST /v1/orders
+  auth: none
+  side_effects: creates a payable order; spends real TRX once the user deposits
+  consequence: financial
+  human_in_the_loop: recommended
+  description: >-
+    Create an energy order and return a deposit address plus the exact TRX amount and a ttl
+    (typically 3600s).
+  inputs: [referral_code, address_from, address_to, resources.duration, resources.energy, resources.bandwidth, address_to_activation]
+  source: https://docs-wallets.tronzap.com/api/create-order.html
+- name: tronzap_check_order
+  status: candidate
+  surface: TronZap Wallet Orders API
+  rest: POST /v1/orders/check
+  auth: none
+  side_effects: none
+  inputs: [order_id]
+  source: https://docs-wallets.tronzap.com/api/check-order.html
+- name: tronzap_cancel_order
+  status: candidate
+  surface: TronZap Wallet Orders API
+  rest: POST /v1/orders/cancel
+  auth: none
+  side_effects: cancels an order still in `new` status; deposits arriving afterwards are NOT refunded
+  consequence: financial
+  human_in_the_loop: required
+  inputs: [order_id]
+  source: https://docs-wallets.tronzap.com/api/cancel-order.html
+- name: tronzap_list_services
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/services
+  auth: bearer + X-Signature
+  side_effects: none
+  source: https://docs.tronzap.com/api/services.html
+- name: tronzap_get_balance
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/balance
+  auth: bearer + X-Signature
+  side_effects: none
+  source: https://docs.tronzap.com/api/balance.html
+- name: tronzap_estimate_energy
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/estimate-energy
+  auth: bearer + X-Signature
+  side_effects: none
+  source: https://docs.tronzap.com/api/estimate-energy.html
+- name: tronzap_get_address_info
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/address-info
+  auth: bearer + X-Signature
+  side_effects: none
+  source: https://docs.tronzap.com/api/address-info.html
+- name: tronzap_calculate_resource_cost
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/calculate
+  auth: bearer + X-Signature
+  side_effects: none
+  source: https://docs.tronzap.com/api/calculate.html
+- name: tronzap_create_transaction
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/transaction/new
+  auth: bearer + X-Signature
+  side_effects: spends account balance; NOT refundable and NOT reversible
+  consequence: financial
+  human_in_the_loop: required
+  source: https://docs.tronzap.com/api/transaction-create.html
+- name: tronzap_check_transaction
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/transaction/check
+  auth: bearer + X-Signature
+  side_effects: none
+  source: https://docs.tronzap.com/api/transaction-check.html
+- name: tronzap_list_subscriptions
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/subscriptions
+  auth: bearer + X-Signature
+  side_effects: none
+  source: https://docs.tronzap.com/api/subscriptions.html
+- name: tronzap_subscription_history
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/subscriptions/history
+  auth: bearer + X-Signature
+  side_effects: none
+  source: https://docs.tronzap.com/api/subscriptions-history.html
+- name: tronzap_start_subscription
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/subscription/start
+  auth: bearer + X-Signature
+  side_effects: creates a recurring billed subscription
+  consequence: financial
+  human_in_the_loop: required
+  source: https://docs.tronzap.com/api/subscription-start.html
+- name: tronzap_check_subscription
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/subscription/check
+  auth: bearer + X-Signature
+  side_effects: none
+  source: https://docs.tronzap.com/api/subscription-check.html
+- name: tronzap_stop_subscription
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/subscription/stop
+  auth: bearer + X-Signature
+  side_effects: stops a subscription; only possible when no transaction limit was set
+  source: https://docs.tronzap.com/api/subscription-stop.html
+- name: tronzap_list_aml_services
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/aml-checks
+  auth: bearer + X-Signature
+  side_effects: none
+  source: https://docs.tronzap.com/api/aml-checks.html
+- name: tronzap_create_aml_check
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/aml-checks/new
+  auth: bearer + X-Signature
+  side_effects: billed screening
+  consequence: financial
+  source: https://docs.tronzap.com/api/aml-check-create.html
+- name: tronzap_check_aml_status
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/aml-checks/check
+  auth: bearer + X-Signature
+  side_effects: none
+  source: https://docs.tronzap.com/api/aml-check-status.html
+- name: tronzap_aml_history
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/aml-checks/history
+  auth: bearer + X-Signature
+  side_effects: none
+  source: https://docs.tronzap.com/api/aml-checks-history.html
+- name: tronzap_direct_recharge_info
+  status: candidate
+  surface: TronZap REST API
+  rest: POST /v1/direct-recharge-info
+  auth: bearer + X-Signature
+  side_effects: none
+  source: https://docs.tronzap.com/api/direct-recharge-info.html
+summary:
+  server_published: false
+  candidate_tools: 21
+  read_only_tools: 15
+  write_tools: 6
+  unauthenticated_tools: 4

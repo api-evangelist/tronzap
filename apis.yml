@@ -1,12 +1,47 @@
 name: TronZap
-description: >-
-  API-first TRON-network infrastructure provider offering automated TRON Energy and Bandwidth rental, energy
-  subscriptions, and AML crypto checks to reduce USDT (TRC-20) transfer costs via delegation to non-custodial wallets.
+aid: tronzap
+description: API-first TRON-network infrastructure provider offering automated TRON Energy and Bandwidth rental, energy subscriptions,
+  and AML crypto checks to reduce USDT (TRC-20) transfer costs via delegation to non-custodial wallets.
 url: https://raw.githubusercontent.com/api-evangelist/tronzap/refs/heads/main/apis.yml
 created: '2026-08-30'
 modified: '2026-08-30'
 specificationVersion: '0.21'
 tags:
+- Blockchain
+- Cryptocurrency
+- TRON
+- DeFi infrastructure
+- Stablecoin
+- USDT
+- TRC-20
+- Resource marketplace
+- Payments
+- Fees optimization
+- Web3
+- DeFi
+- Payouts
+- Compliance
+- AML
+- Developer Tools
+- SDK
+apis:
+- name: TronZap REST API
+  description: 'REST API for TRON Energy and Bandwidth rental, energy subscriptions, and AML crypto checks. Endpoints include
+    Get Services, Check Balance, Estimate Energy, Address Info, Calculate Resource Cost, Create/Check Transaction, subscription
+    lifecycle, and AML checks. Bearer token + SHA256 X-Signature authentication.
+
+
+    No OpenAPI is published. Re-probed 2026-08-30 against every host: /openapi.json, /openapi.yaml, /swagger.json,
+    /v1/openapi.json, /api-docs, /docs and /redoc all 404 on api.tronzap.com (clean JSON 404s), and on tronzap.com,
+    docs.tronzap.com and docs-wallets.tronzap.com (HTML 404 shells). The declared apis.json at docs.tronzap.com/apis.json
+    also 404s. TronZap does publish one real machine-readable contract: a first-party public Postman Collection v2.0.0,
+    "Tron Energy API by TronZap.com", 9 requests, harvested verbatim to postman/tronzap.postman_collection.json. It covers
+    8 of the 17 documented account endpoints and carries POST /v1/energy/calculate where the reference documents
+    POST /v1/calculate. Also published: a 9KB llms.txt, a server-rendered HTML reference at docs.tronzap.com/api/, and four
+    official MIT SDKs (PHP, Node.js, Python, Go). Nothing was invented.'
+  humanURL: https://docs.tronzap.com/api/
+  baseURL: https://api.tronzap.com/v1/
+  tags:
   - Blockchain
   - Cryptocurrency
   - TRON
@@ -24,44 +59,126 @@ tags:
   - AML
   - Developer Tools
   - SDK
-apis:
-  - name: TronZap REST API
-    description: >-
-      REST API for TRON Energy and Bandwidth rental, energy subscriptions, and AML crypto checks. Endpoints include Get
-      Services, Check Balance, Estimate Energy, Address Info, Calculate Resource Cost, Create/Check Transaction,
-      subscription lifecycle, and AML checks. Bearer token + SHA256 X-Signature authentication.
-    humanURL: https://docs.tronzap.com/api/
-    baseURL: https://api.tronzap.com/v1/
-    tags:
-      - Blockchain
-      - Cryptocurrency
-      - TRON
-      - DeFi infrastructure
-      - Stablecoin
-      - USDT
-      - TRC-20
-      - Resource marketplace
-      - Payments
-      - Fees optimization
-      - Web3
-      - DeFi
-      - Payouts
-      - Compliance
-      - AML
-      - Developer Tools
-      - SDK
-    properties:
-      - type: Documentation
-        url: https://docs.tronzap.com
-      - type: PostmanCollection
-        url: https://www.postman.com/tron-energy/tronzap-com/overview
-      - type: Documentation
-        url: https://docs.tronzap.com/api/authentication.html
+  properties:
+  - type: Documentation
+    url: https://docs.tronzap.com
+  - type: PostmanCollection
+    url: https://www.postman.com/tron-energy/tronzap-com/overview
+  - type: Documentation
+    url: https://docs.tronzap.com/api/authentication.html
+  - type: LLMsTxt
+    url: https://tronzap.com/llms.txt
+  - type: APIReference
+    url: https://docs.tronzap.com/api/
+  - type: PostmanCollection
+    url: postman/tronzap.postman_collection.json
+    name: Tron Energy API by TronZap.com (Postman Collection v2.0.0, harvested verbatim)
+- name: TronZap Wallet Orders API
+  description: >-
+    Fully public, unauthenticated Orders API for non-custodial wallet integrations. Four operations —
+    POST /v1/orders/calculate (a true dry run whose total is guaranteed to equal the order amount),
+    POST /v1/orders (returns a deposit address, an exact TRX amount and a ttl, typically 3600s),
+    POST /v1/orders/check and POST /v1/orders/cancel. The provider states "No authentication headers are
+    required. The Orders API is fully public"; only Content-Type and Accept are needed, and an optional
+    referral_code carries partner commission. It is the only TronZap surface with a documented rate limit
+    (1 request/second/IP, HTTP 429, no Retry-After — observed live 2026-08-30) and the only one with a
+    documented reversal path (cancel while the order is still in `new` status). Orders move through
+    new, paid, processing, completed, failed, cancelled, expired. Documented at docs-wallets.tronzap.com;
+    no SDK covers it and llms.txt does not mention it. No OpenAPI. Verified 2026-08-30.
+  humanURL: https://docs-wallets.tronzap.com/api/
+  baseURL: https://api.tronzap.com/v1/
+  tags:
+  - Blockchain
+  - Cryptocurrency
+  - TRON
+  - DeFi infrastructure
+  - Stablecoin
+  - USDT
+  - TRC-20
+  - Resource marketplace
+  - Payments
+  - Web3
+  - Wallets
+  - Embedded finance
+  - Developer Tools
+  properties:
+  - type: Documentation
+    url: https://docs-wallets.tronzap.com/
+  - type: APIReference
+    url: https://docs-wallets.tronzap.com/api/
+  - type: GettingStarted
+    url: https://docs-wallets.tronzap.com/getting-started.html
+image: https://tronzap.com/images/logo-1200x630.png
 maintainers:
-  - FN: TronZap
-    url: https://tronzap.com/developers
+- FN: TronZap
+  email: support@tronzap.com
+  url: https://tronzap.com/developers
 generated:
   by: apis.io/add
   model: claude-opus-4-8
   confidence: 95
   at: '2026-08-30T20:07:48.556Z'
+common:
+- type: DomainSecurity
+  url: security/tronzap-domain-security.yml
+- type: DeveloperPortal
+  url: https://tronzap.com/developers
+- type: Documentation
+  url: https://docs.tronzap.com/
+- type: APIReference
+  url: https://docs.tronzap.com/api/
+- type: GettingStarted
+  url: https://docs-wallets.tronzap.com/getting-started.html
+- type: Support
+  url: https://tronzap.com/support
+- type: GitHubOrganization
+  url: https://github.com/tron-energy-market
+- type: Pricing
+  url: https://tronzap.com/b2b
+- type: SignUp
+  url: https://dash.tronzap.com/register
+- type: Login
+  url: https://dash.tronzap.com/login
+- type: TermsOfService
+  url: https://tronzap.com/terms
+- type: PrivacyPolicy
+  url: https://tronzap.com/privacy
+- type: Blog
+  url: https://tronzap.com/learn
+- type: Postman
+  url: https://www.postman.com/tron-energy/tronzap-com/overview
+- type: LLMsTxt
+  url: llms/tronzap-llms.txt
+  name: TronZap llms.txt, harvested verbatim from https://tronzap.com/llms.txt
+- type: Packages
+  url: packages/tronzap-packages.yml
+- type: SDKs
+  url: packages/tronzap-packages.yml
+  name: Four official MIT SDKs - PHP, Node.js, Python, Go
+- type: Conventions
+  url: conventions/tronzap-conventions.yml
+- type: ErrorCatalog
+  url: errors/tronzap-problem-types.yml
+- type: Authentication
+  url: authentication/tronzap-authentication.yml
+- type: RateLimits
+  url: rate-limits/tronzap-rate-limits.yml
+- type: Plans
+  url: plans/tronzap-plans-pricing.yml
+- type: Lifecycle
+  url: lifecycle/tronzap-lifecycle.yml
+- type: Conformance
+  url: conformance/tronzap-conformance.yml
+- type: DataModel
+  url: data-model/tronzap-data-model.yml
+- type: MCPServer
+  url: mcp/tronzap-mcp.yml
+  name: Candidate tool list only - TronZap publishes no MCP server
+- type: AgentSkill
+  url: skills/_index.yml
+  name: Three packaged Agent Skills grounded in the published TronZap reference
+x-enrichment:
+  date: '2026-08-30'
+  status: enriched
+  artifacts_added: 18
+  pass: local-v1

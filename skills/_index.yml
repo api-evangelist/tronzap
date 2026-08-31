@@ -1,0 +1,54 @@
+generated: '2026-08-30'
+method: generated
+source: >-
+  Authored from the TronZap published reference at https://docs.tronzap.com/api/ and
+  https://docs-wallets.tronzap.com/api/ (fetched 2026-08-30). TronZap publishes no OpenAPI and
+  no AGENTS.md or skill files of its own — searched both docs hosts and the marketing site on
+  2026-08-30. Every operation named in these skills is quoted verbatim from the provider's
+  reference; none is invented.
+provider: TronZap
+skills:
+- file: tronzap-rent-energy-for-usdt-transfer.md
+  name: tronzap-rent-energy-for-usdt-transfer
+  api: TronZap REST API
+  title: Rent TRON Energy for a USDT (TRC-20) transfer
+  summary: >-
+    The marquee flow — size, price, fund-check and buy Energy so a wallet can send USDT without
+    burning TRX, then poll to delivery. Flags the irreversibility of the purchase.
+  operations:
+  - POST /v1/services
+  - POST /v1/estimate-energy
+  - POST /v1/calculate
+  - POST /v1/balance
+  - POST /v1/transaction/new
+  - POST /v1/transaction/check
+- file: tronzap-wallet-orders-public-api.md
+  name: tronzap-wallet-orders-public-api
+  api: TronZap Wallet Orders API
+  title: Order TRON Energy without an account
+  summary: >-
+    The unauthenticated wallet-integration surface. Quote, create, poll and cancel, with the
+    1 req/s per-IP ceiling and the `new`-status-only cancel window called out explicitly.
+  operations:
+  - POST /v1/orders/calculate
+  - POST /v1/orders
+  - POST /v1/orders/check
+  - POST /v1/orders/cancel
+- file: tronzap-aml-screen-tron-address.md
+  name: tronzap-aml-screen-tron-address
+  api: TronZap REST API
+  title: Screen a TRON address or transaction for AML risk
+  summary: >-
+    List AML services, create a billed screening on an address or hash, poll to a terminal
+    state, and reconcile through the paginated history.
+  operations:
+  - POST /v1/aml-checks
+  - POST /v1/aml-checks/new
+  - POST /v1/aml-checks/check
+  - POST /v1/aml-checks/history
+cross_links:
+  conventions: conventions/tronzap-conventions.yml
+  errors: errors/tronzap-problem-types.yml
+  authentication: authentication/tronzap-authentication.yml
+  rate_limits: rate-limits/tronzap-rate-limits.yml
+count: 3

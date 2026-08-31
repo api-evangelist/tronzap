@@ -1,0 +1,216 @@
+generated: '2026-08-30'
+method: searched
+source: >-
+  https://docs.tronzap.com/api/ , /api/authentication.html, /api/error-codes.html,
+  /api/transaction-statuses.html, /api/subscriptions-history.html,
+  /api/aml-checks-history.html and https://docs-wallets.tronzap.com/api/ (+ order-statuses,
+  cancel-order, create-order, check-order), fetched 2026-08-30
+note: >-
+  Cross-cutting semantics for both TronZap surfaces. There is no OpenAPI, so every field here
+  is read from the provider's own published reference; nothing is inferred from a spec.
+transport:
+  protocol: HTTPS/JSON
+  method: POST
+  note: >-
+    Every documented operation on both APIs is a POST, including pure reads
+    (/v1/balance, /v1/services, /v1/orders/check). There are no GET endpoints, no path
+    parameters and no query parameters — the API is RPC-over-POST, not resource-oriented.
+    Agents must not assume GET-safety anywhere, and HTTP caching is unavailable.
+  content_type: application/json
+  accept: application/json
+authentication:
+  account_api: Bearer token + X-Signature SHA-256 body signature
+  orders_api: none (fully public)
+  ref: authentication/tronzap-authentication.yml
+response_envelope:
+  shape: '{ "code": <int>, "request_id": "<uuid>", "result": { ... } }'
+  success_code: 0
+  error_fields: [code, key, request_id, error]
+  http_status_on_business_error: 200
+  note: >-
+    The envelope is identical on both APIs. `result` carries the payload on success and is
+    replaced by `key` + `error` on failure. HTTP 200 does not mean success — the provider
+    says so in its own error reference.
+  ref: errors/tronzap-problem-types.yml
+request_tracing:
+  supported: true
+  direction: server-to-client
+  field: request_id
+  location: response body
+  format: UUID v4
+  client_supplied: false
+  note: >-
+    Every response on both APIs carries a server-generated request_id, and the docs ask for it
+    on support contact. There is no client-supplied trace header (no X-Request-Id honored),
+    so an agent cannot correlate its own retry attempts server-side.
+pagination:
+  supported: true
+  style: page-number
+  endpoints:
+  - POST /v1/subscriptions/history
+  - POST /v1/aml-checks/history
+  params:
+  - name: page
+    type: integer
+    default: 1
+    minimum: 1
+  - name: per_page
+    type: integer
+    default: 10
+    maximum: 50
+  filter:
+  - name: status
+    note: >-
+      Server-side filtering by status. AML values: pending, processing, completed, failed.
+  response_fields: []
+  cursor: false
+  note: >-
+    Offset/page pagination only. No cursor, no next/prev link, and the docs do not name the
+    response field carrying total count — an agent cannot know when it has reached the last
+    page except by receiving a short page.
+idempotency:
+  supported: false
+  documented: false
+  header: null
+  note: >-
+    Neither API documents an idempotency key. `external_id` is accepted on
+    POST /v1/transaction/new, /v1/subscription/start, /v1/subscription/stop and
+    /v1/subscription/check, but the provider describes it only as an "optional external
+    transaction identifier" and a lookup alias — it is never stated to deduplicate a retried
+    create. The one real duplicate-write guard is on the Orders API: a second order for the
+    same address_from + address_to pair is refused while the first is still in `new` status.
+    That is a natural-key concurrency guard, not a client-controlled idempotency contract, so
+    no Idempotency pointer is claimed for TronZap.
+  partial_protections:
+  - surface: POST /v1/orders
+    mechanism: duplicate-active-order rejection on (address_from, address_to) while status = new
+    source: https://docs-wallets.tronzap.com/api/
+  agent_guidance: >-
+    A retried POST /v1/transaction/new after a timeout may create a second paid transaction.
+    Poll POST /v1/transaction/check with the external_id you supplied before retrying.
+reversibility:
+  grade: verified
+  note: >-
+    TronZap has write surfaces and publishes an explicit, mixed reversibility posture: one
+    operation is cancellable inside a stated window, one is stoppable under a stated
+    precondition, and the core purchase is stated to be non-refundable. All three statements
+    come from the provider.
+  surfaces:
+  - write_operation: POST /v1/orders
+    operation_name: Create Order (Wallet Orders API)
+    reversal_operation: POST /v1/orders/cancel
+    reversal_name: Cancel Order
+    window: >-
+      Only while the order is in `new` status — that is, before the TRX deposit is matched
+      and before the order's ttl elapses. ttl is returned on create and is "typically 3600"
+      seconds (1 hour), with the exact instant in expires_at.
+    window_source: https://docs-wallets.tronzap.com/api/cancel-order.html
+    window_source_2: https://docs-wallets.tronzap.com/api/create-order.html
+    grade: verified
+    caveat: >-
+      "Once an order is cancelled, any TRX received later for that order is not refunded
+      automatically." Cancelling after the user has paid loses the funds. Cancel only when
+      certain no deposit was sent.
+    terminal_after: [paid, processing, completed, failed, cancelled, expired]
+  - write_operation: POST /v1/subscription/start
+    operation_name: Start Subscription
+    reversal_operation: POST /v1/subscription/stop
+    reversal_name: Stop Subscription
+    window: >-
+      Any time while the subscription is active, but ONLY for subscriptions created without a
+      transaction limit. A subscription carrying a transactions_limit cannot be stopped and
+      returns error code 21 / cannot_stop_subscription.
+    window_source: https://docs-wallets.tronzap.com/api/cancel-order.html
+    docs: https://docs.tronzap.com/api/subscription-stop.html
+    grade: verified
+    caveat: >-
+      The irreversibility is decided at creation time by params.transactions_limit, not at
+      stop time. An agent that sets a transaction limit is committing to it.
+  - write_operation: POST /v1/transaction/new
+    operation_name: Create Transaction (energy / bandwidth / resource_bundle / activate_address)
+    reversal_operation: null
+    window: null
+    grade: none
+    caveat: >-
+      No cancel, void, refund or reverse endpoint exists for an account-API transaction, and
+      the provider's own FAQ states the position plainly: "Are purchases refundable? No. Paid
+      TRX goes into staking to power energy for all users." This is a one-way write and an
+      agent must treat it as spending real funds irreversibly.
+    source: https://tronzap.com/llms.txt
+  - write_operation: POST /v1/aml-checks/new
+    operation_name: Create AML Check
+    reversal_operation: null
+    window: null
+    grade: none
+    caveat: A billed screening; no cancellation is documented once created.
+dry_run_mode:
+  supported: true
+  note: >-
+    Both APIs expose genuine no-side-effect price rehearsal, which is unusually good for a
+    provider with no sandbox. POST /v1/calculate and POST /v1/estimate-energy price an account
+    purchase without creating a transaction; POST /v1/orders/calculate is documented as "a
+    pure pricing endpoint — it does not touch the TRON network", and the provider guarantees
+    its `total` equals the `amount` a subsequent POST /v1/orders will require for the same
+    inputs. That equality is what makes it a real rehearsal rather than an estimate.
+  operations:
+  - POST /v1/orders/calculate
+  - POST /v1/calculate
+  - POST /v1/estimate-energy
+  source: https://docs-wallets.tronzap.com/api/calculate.html
+versioning:
+  style: uri-path
+  current: v1
+  header: null
+  date_based: false
+  note: >-
+    Version lives in the path (https://api.tronzap.com/v1/...). No version header, no date
+    pinning, no version negotiation.
+  ref: lifecycle/tronzap-lifecycle.yml
+field_expansion:
+  supported: false
+  note: No expand / fields / include parameter is documented on any endpoint.
+metadata:
+  supported: false
+  note: >-
+    No free-form metadata object. `external_id` (max 64 chars on the Orders API referral_code;
+    unspecified elsewhere) is the only client-controlled string that survives a write.
+events:
+  webhooks: false
+  streaming: false
+  note: >-
+    TronZap ships no webhook, callback or event surface. The provider prescribes polling
+    instead: "Poll every 5-10 seconds after the user confirms they have sent TRX. Stop polling
+    when status is one of the terminal states." An agent-facing consequence: there is no way
+    to be notified of delivery, only to ask repeatedly — against a 1 req/s per-IP ceiling on
+    the Orders API.
+  source: https://docs-wallets.tronzap.com/api/check-order.html
+rate_limit_signaling:
+  headers: [x-ratelimit-limit, x-ratelimit-remaining]
+  retry_after: false
+  ref: rate-limits/tronzap-rate-limits.yml
+state_machines:
+  transactions:
+    states: [new, pending, success, failed]
+    terminal: [success, failed]
+    flow: new -> pending -> success | failed
+    source: https://docs.tronzap.com/api/transaction-statuses.html
+  orders:
+    states: [new, paid, processing, completed, failed, cancelled, expired]
+    terminal: [completed, failed, cancelled, expired]
+    flow: new -> paid -> processing -> completed | failed; new -> cancelled; new -> expired
+    source: https://docs-wallets.tronzap.com/api/order-statuses.html
+  aml_checks:
+    states: [pending, processing, completed, failed]
+    terminal: [completed, failed]
+    source: https://docs.tronzap.com/api/aml-checks-history.html
+deprecations_in_effect:
+  note: >-
+    The reference marks superseded request and response fields inline. See
+    lifecycle/tronzap-lifecycle.yml for the full list.
+  ref: lifecycle/tronzap-lifecycle.yml
+cross_links:
+  errors: errors/tronzap-problem-types.yml
+  lifecycle: lifecycle/tronzap-lifecycle.yml
+  authentication: authentication/tronzap-authentication.yml
+  rate_limits: rate-limits/tronzap-rate-limits.yml
+  data_model: data-model/tronzap-data-model.yml

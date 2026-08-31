@@ -1,0 +1,123 @@
+# TronZap
+
+> TronZap is an automated platform for renting TRON Energy and Bandwidth, enabling users to reduce USDT (TRC20) transaction fees by up to 80%. Trusted daily by thousands of users, payment service providers (PSPs), crypto exchanges, crypto wallets, and exchangers worldwide.
+
+## About
+
+- [TronZap](https://tronzap.com/): Automated TRON Energy and Bandwidth rental platform. Non-custodial, operates 24/7 with production-grade infrastructure. Proud member of TRON DAO.
+- [TRON DAO Forum Post](https://forum.trondao.org/t/tronzap-tron-energy-rentals-made-easy-24-7-support-and-upcoming-subscriptions/32982): Official TronZap presence on the TRON DAO community forum.
+- [24/7 Support](https://telegram.me/tronzap_support_bot): Round-the-clock customer support via Telegram.
+
+## Site Pages
+
+- [Buy Tron Energy | Rent TRX Energy & Bandwidth](https://tronzap.com/): Home — instant TRON Energy rental, quick rental address, prices.
+- [TRON Energy & Bandwidth FAQ](https://tronzap.com/support): Answers to common questions — how much energy a USDT transfer needs, how to fix OUT_OF_ENERGY, renting without registration.
+- [TRON Energy Rental Service](https://tronzap.com/product): Solutions for everyday users, P2P merchants, traders and businesses.
+- [TRON Energy for Business (B2B)](https://tronzap.com/b2b): Bulk energy, partner program, API integration for exchanges, PSPs and wallets.
+- [TRON Energy API and SDKs](https://tronzap.com/developers): Order Energy and Bandwidth programmatically.
+- [Crypto AML Check](https://tronzap.com/aml-check): Check a TRON address or transaction for AML risks without registration.
+- [Referral Program](https://tronzap.com/referral-program): Earn up to 5% from every Energy rental your referrals make.
+
+TronZap is used by payment service providers (PSPs), cryptocurrency exchanges, crypto wallets, and exchangers. Thousands of users trust TronZap every day for reliable, instant energy delegation on the TRON blockchain.
+
+Supported all non-custodial wallets with TRC20 support, including: TronLink, Trust Wallet, TokenPocket, Metamask, OKX Wallet, Ledger, Tangem, OneKey, imToken, MathWallet, SafePal.
+
+## Who Uses TronZap
+
+TronZap is built for any business or individual that regularly sends USDT (TRC20) on the TRON network:
+
+- **Payment Service Providers (PSPs)** — process high-volume USDT payouts with minimal per-transaction costs.
+- **Cryptocurrency Exchanges (CEX/DEX)** — reduce operational costs on mass USDT withdrawals.
+- **Crypto Exchangers** — instant swap services processing many small USDT transfers daily.
+- **OTC Desks** — optimize costs on large-volume over-the-counter USDT trades.
+- **Crypto Wallets** — integrate energy rental to offer users cheaper transfers out of the box.
+- **Trading Bots and Automated Services** — frequent programmatic transactions via TronZap API.
+- **Telegram Bots and Mini Apps** — process USDT payments within the Telegram ecosystem.
+- **DeFi Projects and dApps** — interact with TRC20 smart contracts at reduced cost.
+- **E-commerce and Merchants** — accept USDT payments with lower processing fees.
+- **Freelancers and Individuals** — save on fees when sending USDT regularly.
+
+## Services
+
+- **TRON Energy Rental**: Rent energy to reduce USDT (TRC20) transfer fees. Delegation happens automatically within seconds.
+- **TRON Bandwidth Rental**: Rent bandwidth for basic TRON transactions that do not involve smart contract execution.
+- **Energy Subscriptions**: Recurring automatic energy delegation for services, bots, and wallets with regular transaction activity.
+- **Address Activation**: Activate new TRON addresses that have never held USDT.
+- **AML Checks**: Blockchain AML screening for addresses and transaction hashes to assess risk and improve compliance.
+
+## How It Works
+
+1. Send TRX to the TronZap platform address.
+2. Energy is delegated to your wallet automatically within one minute, available for 1 hour.
+3. The amount of energy depends on the amount of TRX sent.
+
+Alternatively, register an account at [TronZap Dashboard](https://dash.tronzap.com/) to top up your balance and buy energy instantly without QR codes or delays.
+
+## Pricing
+
+- **65,000 Energy** (standard USDT transfer): ~3 TRX (~$0.69)
+- **131,000 Energy** (transfer to new/inactive wallet): ~5.50 TRX (~$1.27)
+- Without energy, a USDT transfer costs ~13.40 TRX. With TronZap energy, ~3 TRX. **Savings: ~10.40 TRX per transfer.**
+
+We recommend always buying 131,000 energy to ensure your USDT payment goes through without extra blockchain fees.
+
+## FAQ
+
+- **What is TronZap?** Automated TRON energy leasing platform operating 24/7. Non-custodial, safe, no intermediaries. Member of TRON DAO.
+- **What is OUT_OF_ENERGY?** Error when your wallet lacks energy for smart contract execution during USDT (TRC20) transfers. Solution: rent at least 131,000 energy on TronZap before transferring.
+- **How to get energy in TronLink?** Register on TronZap, go to Buy Energy, paste your TronLink address, choose amount, pay. Energy arrives instantly.
+- **Can I use TronZap without registration?** Yes. Send TRX to the platform address and energy is auto-delegated within one minute.
+- **How to send USDT without TRX?** Rent TRON Energy via TronZap to your wallet and transfer USDT without spending TRX.
+- **How is the USDT transfer fee calculated?** TRON uses energy first; if none available, TRX is burned. Standard transfer needs 65,000 energy + 345 bandwidth. Transfers to new wallets need 131,000 energy.
+- **Are purchases refundable?** No. Paid TRX goes into staking to power energy for all users.
+- **Is there a dashboard?** Yes. [TronZap Dashboard](https://dash.tronzap.com/) for tracking purchases, transaction history, and managing energy.
+- **Energy subscriptions?** Available via the [Telegram Bot](https://telegram.me/tronzap_bot) and [Dashboard](https://dash.tronzap.com/). Ideal for services, bots, and frequent senders.
+- **TRON Bandwidth rental?** Available via [Telegram Bot](https://telegram.me/tronzap_bot) and [Dashboard](https://dash.tronzap.com/).
+- **AML Checks?** Available via [Telegram Bot](https://telegram.me/tronzap_bot) and [Dashboard](https://dash.tronzap.com/) for address and transaction screening.
+
+## API & SDK
+
+- [Tron Energy API Documentation](https://docs.tronzap.com/): Official API docs for the TronZap energy purchase service.
+- [АПИ аренды энергии в блокчейне TRON (русский)](https://docs.tronzap.com/ru/): Официальное АПИ аренды энергии TRX/TRON — документация на русском.
+- [API Reference](https://docs.tronzap.com/api/): All endpoints — services, balance, transactions, subscriptions, AML checks, direct recharge.
+- [Authentication Guide](https://docs.tronzap.com/api/authentication.html): Bearer token + SHA256 signature authentication.
+- [SDK Libraries](https://docs.tronzap.com/sdk.html): Official open-source SDKs for PHP, Node.js, and Python.
+- [TronZap PHP SDK](https://packagist.org/packages/tron-energy-market/tronzap-sdk-php): `composer require tron-energy-market/tronzap-sdk-php`
+- [TronZap Node.js SDK](https://www.npmjs.com/package/tronzap-sdk): `npm install tronzap-sdk`
+- [TronZap Python SDK](https://pypi.org/project/tronzap-sdk/): `pip install tronzap-sdk`
+- [GitHub Organization](https://github.com/tron-energy-market): All open-source repositories.
+- [Postman Collection](https://www.postman.com/tron-energy/tronzap-com/overview): Ready-to-use API collection for testing.
+
+Base URL: `https://api.tronzap.com`
+
+## Telegram Bot
+
+- [TronZap Bot](https://telegram.me/tronzap_bot): Buy TRON Energy and Bandwidth instantly via Telegram. Non-custodial — no private keys shared. Supports energy purchase, subscriptions, bandwidth rental, and AML checks.
+
+## Available Languages
+
+TronZap is available in 24 languages:
+- English: https://tronzap.com/
+- Español (Spanish): https://tronzap.com/es
+- Português Brasil (Brazilian Portuguese): https://tronzap.com/pt-br
+- Русский (Russian): https://tronzap.com/ru
+- Türkçe (Turkish): https://tronzap.com/tr
+- Deutsch (German): https://tronzap.com/de
+- Français (French): https://tronzap.com/fr
+- Italiano (Italian): https://tronzap.com/it
+- Polski (Polish): https://tronzap.com/pl
+- 简体中文 (Chinese Simplified): https://tronzap.com/zh-cn
+- 繁體中文 (Chinese Traditional): https://tronzap.com/zh-tw
+- 日本語 (Japanese): https://tronzap.com/ja
+- 한국어 (Korean): https://tronzap.com/ko
+- العربية (Arabic): https://tronzap.com/ar
+- Українська (Ukrainian): https://tronzap.com/uk
+- हिन्दी (Hindi): https://tronzap.com/hi-in
+- বাংলা (Bengali): https://tronzap.com/bn-in
+- Bahasa Indonesia (Indonesian): https://tronzap.com/id
+- Tiếng Việt (Vietnamese): https://tronzap.com/vi-vn
+- ภาษาไทย (Thai): https://tronzap.com/th
+- Filipino (Filipino): https://tronzap.com/fil-ph
+- Қазақша (Kazakh): https://tronzap.com/kz
+- Kiswahili (Swahili): https://tronzap.com/sw
+- 廣東話 (Cantonese): https://tronzap.com/yue-hk
