@@ -11,6 +11,24 @@ tags:
 - Cryptocurrency
 - TRON
 - DeFi infrastructure
+- Stablecoins
+- USDT
+- TRC-20
+- Resource marketplace
+- Payments
+- Fees optimization
+- Web3
+- DeFi
+- Payouts
+- Compliance
+- AML
+- Developer Tools
+- SDK
+tags_raw:
+- Blockchain
+- Cryptocurrency
+- TRON
+- DeFi infrastructure
 - Stablecoin
 - USDT
 - TRC-20
@@ -42,6 +60,24 @@ apis:
   humanURL: https://docs.tronzap.com/api/
   baseURL: https://api.tronzap.com/v1/
   tags:
+  - Blockchain
+  - Cryptocurrency
+  - TRON
+  - DeFi infrastructure
+  - Stablecoins
+  - USDT
+  - TRC-20
+  - Resource marketplace
+  - Payments
+  - Fees optimization
+  - Web3
+  - DeFi
+  - Payouts
+  - Compliance
+  - AML
+  - Developer Tools
+  - SDK
+  tags_raw:
   - Blockchain
   - Cryptocurrency
   - TRON
@@ -88,6 +124,20 @@ apis:
   humanURL: https://docs-wallets.tronzap.com/api/
   baseURL: https://api.tronzap.com/v1/
   tags:
+  - Blockchain
+  - Cryptocurrency
+  - TRON
+  - DeFi infrastructure
+  - Stablecoins
+  - USDT
+  - TRC-20
+  - Resource marketplace
+  - Payments
+  - Web3
+  - Wallets
+  - Embedded Finance
+  - Developer Tools
+  tags_raw:
   - Blockchain
   - Cryptocurrency
   - TRON
