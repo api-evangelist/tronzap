@@ -3,6 +3,21 @@ aid: tronzap
 description: API-first TRON-network infrastructure provider offering automated TRON Energy and Bandwidth rental, energy subscriptions,
   and AML crypto checks to reduce USDT (TRC-20) transfer costs via delegation to non-custodial wallets.
 url: https://raw.githubusercontent.com/api-evangelist/tronzap/refs/heads/main/apis.yml
+accessModel:
+  pricing: free
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Free · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  - rate-limits
+  - security
+  generated: '2026-09-03'
+  method: derived
 created: '2026-08-30'
 modified: '2026-08-30'
 specificationVersion: '0.21'
@@ -221,8 +236,9 @@ common:
   url: conformance/tronzap-conformance.yml
 - type: DataModel
   url: data-model/tronzap-data-model.yml
-- type: MCPServer
+- type: X-MCPServerCandidate
   url: mcp/tronzap-mcp.yml
+  note: 'Renamed from MCPServer 2026-09-03 (roadmap#247): the manifest self-describes as status: candidate — a tool list derived from the published API contracts, not an existing server. The scorer already read the manifest and reported mcp_server correctly; the MCPServer type was crediting the artifact-type surfaces with a server that does not exist.'
   name: Candidate tool list only - TronZap publishes no MCP server
 - type: AgentSkill
   url: skills/_index.yml
