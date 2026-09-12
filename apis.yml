@@ -184,6 +184,8 @@ generated:
   confidence: 95
   at: '2026-08-30T20:07:48.556Z'
 common:
+- type: Website
+  url: https://www.tronzap.com/
 - type: DomainSecurity
   url: security/tronzap-domain-security.yml
 - type: DeveloperPortal
