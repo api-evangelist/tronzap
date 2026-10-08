@@ -115,3 +115,23 @@ summary:
   public_rate_card: partial
   machine_readable_pricing: true
   machine_readable_pricing_endpoint: POST https://api.tronzap.com/v1/orders/calculate
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - negotiated
+  units: []
+  plans:
+  - name: Pay-as-you-go
+    access: other
+    model: free
+    model_how: derived
+    units: []
+    periods: []
+  - name: VIP
+    access: other
+    model: negotiated
+    model_how: derived
+    units: []
+    periods: []
